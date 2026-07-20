@@ -5,15 +5,26 @@ import glob
 from pathlib import Path
 from astropy.timeseries import LombScargle
 
-tess_list = sorted(glob.glob('/Users/rm/U/Astroinformatica/Practice_2/tess_curve*.csv'))
+tess_list = sorted(glob.glob('/Users/rm/U/Astroinformatica/Practices/Practice_2/csv/tess_curve*.csv'))
 frames = []
 for path in tess_list:
-    tmp = pd.read_csv(path, usecols=['TIME', 'PDCSAP_FLUX', 'PDCSAP_FLUX_ERR'])
+    try:
+        tmp = pd.read_csv(path, usecols=['TIME', 'PDCSAP_FLUX', 'PDCSAP_FLUX_ERR'])
+    except UnicodeDecodeError:
+        print(f"Error reading {path}. Skipping this file.")
+        continue
+    except ValueError:
+        print(f"Missing required columns in {path}. Skipping this file.")
+        continue
     tmp = tmp.dropna(subset=['TIME', 'PDCSAP_FLUX', 'PDCSAP_FLUX_ERR'])
     tmp['CURVE'] = Path(path).stem
     frames.append(tmp)
 
-df = pd.concat(frames, ignore_index=True)
+try:
+    df = pd.concat(frames, ignore_index=True)
+except ValueError:
+    print("No dataframes to concatenate. Please check the input files.")
+    exit()
 
 for i in np.unique(df['CURVE']):
     time = df[df['CURVE'] == i]['TIME'].to_numpy()
@@ -99,4 +110,4 @@ for i in np.unique(df['CURVE']):
     plt.tight_layout()
     plt.savefig(f'light_curve_{i}.pdf', format='pdf', dpi=300)
 
-    plt.show()
+    plt.close()
