@@ -5,4 +5,4 @@ The TESS light curves were obtained from the MAST Archive as FITS files and conv
 
 The final data analysis was performed in Python using the NumPy, pandas, and Astropy libraries. The data were analyzed using basic statistical methods, outlier detection, and a subsequent LombScargle period analysis.
 
-The final results were plotted and saved in the Practice_3/plot folder.
+The final results were plotted and saved in the Practice_3/plots folder.
